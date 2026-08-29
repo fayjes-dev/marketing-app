@@ -178,7 +178,7 @@ fun HomeScreen(session: UserAccount, onLogout: () -> Unit) {
                             .size(36.dp)
                             .background(Color.White, CircleShape)
                     ) {
-                        Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "Log out", tint = Color(0xFF64748B))
+                        Icon(Icons.Filled.Logout, contentDescription = "Log out", tint = Color(0xFF64748B))
                     }
                 }
 
@@ -341,7 +341,7 @@ fun CustomerRow(customer: Customer, showAssignee: Boolean, onOpen: () -> Unit) {
         IconButton(onClick = {
             context.startActivity(Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:${customer.phone}")))
         }) {
-            Icon(Icons.AutoMirrored.Filled.Chat, contentDescription = "SMS", tint = Color(0xFF64748B), modifier = Modifier.size(18.dp))
+            Icon(Icons.Filled.Chat, contentDescription = "SMS", tint = Color(0xFF64748B), modifier = Modifier.size(18.dp))
         }
     }
 }
