@@ -2,6 +2,7 @@ package com.example.marketing.data
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.UUID
 
@@ -30,6 +31,14 @@ object AppData {
                 val dateAdded = doc.getLong("dateAdded") ?: System.currentTimeMillis()
                 val addedBy = doc.getString("addedBy") ?: ""
                 val assignedTo = doc.getString("assignedTo") ?: ""
+                val notesRaw = doc.get("notes") as? List<*> ?: emptyList<Any>()
+                val notes = notesRaw.mapNotNull { item ->
+                    val map = item as? Map<*, *> ?: return@mapNotNull null
+                    val text = map["text"] as? String ?: return@mapNotNull null
+                    val timestamp = (map["timestamp"] as? Long) ?: (map["timestamp"] as? Double)?.toLong() ?: 0L
+                    val author = map["author"] as? String ?: ""
+                    Note(text = text, timestamp = timestamp, author = author)
+                }.sortedByDescending { it.timestamp }
                 Customer(
                     id = doc.id,
                     name = name,
@@ -37,7 +46,8 @@ object AppData {
                     status = runCatching { Status.valueOf(statusStr) }.getOrDefault(Status.NEW),
                     dateAdded = dateAdded,
                     addedBy = addedBy,
-                    assignedTo = assignedTo
+                    assignedTo = assignedTo,
+                    notes = notes
                 )
             }
             customers.clear()
@@ -59,9 +69,19 @@ object AppData {
             "status" to Status.NEW.name,
             "dateAdded" to System.currentTimeMillis(),
             "addedBy" to addedBy,
-            "assignedTo" to assignedTo
+            "assignedTo" to assignedTo,
+            "notes" to emptyList<Any>()
         )
         customersRef.document(id).set(data)
+    }
+
+    fun addNote(customerId: String, text: String, author: String) {
+        val note = mapOf(
+            "text" to text,
+            "timestamp" to System.currentTimeMillis(),
+            "author" to author
+        )
+        customersRef.document(customerId).update("notes", FieldValue.arrayUnion(note))
     }
 
     fun updateStatus(customerId: String, status: Status) {
@@ -72,11 +92,11 @@ object AppData {
         customersRef.document(customerId).update("assignedTo", newAssignee)
     }
 
-    fun userName(id: String): String = users.find { it.id == id }?.name ?: "—"
-
-    fun staffUsers(): List<UserAccount> = users.filter { it.role == Role.STAFF }
-
     fun deleteCustomer(customerId: String) {
         customersRef.document(customerId).delete()
     }
+
+    fun userName(id: String): String = users.find { it.id == id }?.name ?: "—"
+
+    fun staffUsers(): List<UserAccount> = users.filter { it.role == Role.STAFF }
 }

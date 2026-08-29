@@ -508,6 +508,45 @@ fun CustomerDetailDialog(customer: Customer, session: UserAccount, onDismiss: ()
                 )
 
                 Spacer(Modifier.height(14.dp))
+                Text("Notes", fontSize = 12.sp, color = Color(0xFF64748B))
+                Row(
+                    modifier = Modifier.padding(top = 6.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    OutlinedTextField(
+                        value = noteText,
+                        onValueChange = { noteText = it },
+                        modifier = Modifier.weight(1f),
+                        placeholder = { Text("Add a note...", fontSize = 13.sp) },
+                        singleLine = true
+                    )
+                    TextButton(
+                        onClick = {
+                            if (noteText.isNotBlank()) {
+                                AppData.addNote(customer.id, noteText.trim(), session.name)
+                                noteText = ""
+                            }
+                        },
+                        enabled = noteText.isNotBlank()
+                    ) { Text("Add") }
+                }
+                if (customer.notes.isNotEmpty()) {
+                    Column(modifier = Modifier.padding(top = 8.dp)) {
+                        customer.notes.forEach { note ->
+                            Column(modifier = Modifier.padding(bottom = 8.dp)) {
+                                Text(note.text, fontSize = 13.sp, color = Ink)
+                                Text(
+                                    "${note.author} · ${fmtDate(note.timestamp)}",
+                                    fontSize = 10.sp,
+                                    color = Color(0xFF94A3B8)
+                                )
+                            }
+                        }
+                    }
+                }
+
+                Spacer(Modifier.height(14.dp))
                 TextButton(onClick = { showDeleteConfirm = true }) {
                     Text("Delete customer", color = Color(0xFFDC2626))
                 }
