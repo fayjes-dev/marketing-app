@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "691072612073",
+    "project_id": "marketing-app-9ca94",
+    "storage_bucket": "marketing-app-9ca94.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:691072612073:android:7eb01c9bdb282063e82278",
+        "android_client_info": {
+          "package_name": "com.example.marketing"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTupAiQvXW61b77Jf0oJsdOOMe1OKZIuw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

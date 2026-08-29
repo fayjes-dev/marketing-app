@@ -251,7 +251,7 @@ fun HomeScreen(session: UserAccount, onLogout: () -> Unit) {
             if (visible.isEmpty()) {
                 Box(modifier = Modifier.fillMaxWidth().padding(top = 60.dp), contentAlignment = Alignment.Center) {
                     Text(
-                        "No customers yet.\nTap + to add your first one.",
+                        if (AppData.isSyncing.value) "Inasawazisha..." else "No customers yet.\nTap + to add your first one.",
                         fontSize = 14.sp,
                         color = Color(0xFF94A3B8)
                     )
