@@ -429,6 +429,7 @@ fun CustomerDetailDialog(customer: Customer, session: UserAccount, onDismiss: ()
     var status by remember { mutableStateOf(customer.status) }
     var assignedTo by remember { mutableStateOf(customer.assignedTo) }
     var showDeleteConfirm by remember { mutableStateOf(false) }
+    var noteText by remember { mutableStateOf("") }
     val staff = AppData.staffUsers()
 
     AlertDialog(
