@@ -531,8 +531,7 @@ fun CustomerDetailDialog(customer: Customer, session: UserAccount, onDismiss: ()
                 }) { Text("Delete", color = Color(0xFFDC2626)) }
             },
             dismissButton = {
-                TextButton(onClick = { showDeleteConfir
-m = false }) { Text("Cancel") }
+                TextButton(onClick = { showDeleteConfirm = false }) { Text("Cancel") }
             }
         )
     }
