@@ -33,6 +33,16 @@ import java.util.Locale
 private val Ink = Color(0xFF1C2430)
 private val BgColor = Color(0xFFF7F7F4)
 
+private fun whatsappUrl(phone: String): String {
+    val digits = phone.filter { it.isDigit() }
+    val international = when {
+        digits.startsWith("0") -> "255" + digits.drop(1)
+        digits.startsWith("255") -> digits
+        else -> "255$digits"
+    }
+    return "https://wa.me/$international"
+}
+
 private fun statusColor(status: Status): Color = when (status) {
     Status.NEW -> Color(0xFF64748B)
     Status.CONTACTED -> Color(0xFFB98900)
@@ -343,6 +353,11 @@ fun CustomerRow(customer: Customer, showAssignee: Boolean, onOpen: () -> Unit) {
         }) {
             Icon(Icons.Filled.Chat, contentDescription = "SMS", tint = Color(0xFF64748B), modifier = Modifier.size(18.dp))
         }
+        IconButton(onClick = {
+            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(whatsappUrl(customer.phone))))
+        }) {
+            Icon(Icons.Filled.Chat, contentDescription = "WhatsApp", tint = Color(0xFF25D366), modifier = Modifier.size(18.dp))
+        }
     }
 }
 
@@ -438,6 +453,9 @@ fun CustomerDetailDialog(customer: Customer, session: UserAccount, onDismiss: ()
                     OutlinedButton(onClick = {
                         context.startActivity(Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:${customer.phone}")))
                     }, modifier = Modifier.weight(1f)) { Text("SMS") }
+                    OutlinedButton(onClick = {
+                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(whatsappUrl(customer.phone))))
+                    }, modifier = Modifier.weight(1f)) { Text("WhatsApp") }
                 }
 
                 Spacer(Modifier.height(14.dp))
