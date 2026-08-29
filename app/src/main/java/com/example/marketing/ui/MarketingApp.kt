@@ -428,6 +428,7 @@ fun CustomerDetailDialog(customer: Customer, session: UserAccount, onDismiss: ()
     val context = LocalContext.current
     var status by remember { mutableStateOf(customer.status) }
     var assignedTo by remember { mutableStateOf(customer.assignedTo) }
+    var showDeleteConfirm by remember { mutableStateOf(false) }
     val staff = AppData.staffUsers()
 
     AlertDialog(
@@ -505,10 +506,34 @@ fun CustomerDetailDialog(customer: Customer, session: UserAccount, onDismiss: ()
                     fontSize = 11.sp,
                     color = Color(0xFF94A3B8)
                 )
+
+                Spacer(Modifier.height(14.dp))
+                TextButton(onClick = { showDeleteConfirm = true }) {
+                    Text("Delete customer", color = Color(0xFFDC2626))
+                }
             }
         },
         confirmButton = {
             TextButton(onClick = onDismiss) { Text("Close") }
         }
     )
+
+    if (showDeleteConfirm) {
+        AlertDialog(
+            onDismissRequest = { showDeleteConfirm = false },
+            title = { Text("Delete customer?") },
+            text = { Text("This will permanently remove ${customer.name}. This cannot be undone.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    AppData.deleteCustomer(customer.id)
+                    showDeleteConfirm = false
+                    onDismiss()
+                }) { Text("Delete", color = Color(0xFFDC2626)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteConfir
+m = false }) { Text("Cancel") }
+            }
+        )
+    }
 }

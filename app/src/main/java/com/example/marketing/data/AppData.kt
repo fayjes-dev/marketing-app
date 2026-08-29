@@ -75,4 +75,8 @@ object AppData {
     fun userName(id: String): String = users.find { it.id == id }?.name ?: "—"
 
     fun staffUsers(): List<UserAccount> = users.filter { it.role == Role.STAFF }
+
+    fun deleteCustomer(customerId: String) {
+        customersRef.document(customerId).delete()
+    }
 }
