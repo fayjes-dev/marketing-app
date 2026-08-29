@@ -22,6 +22,11 @@ data class Note(
     val author: String
 )
 
+data class HistoryEvent(
+    val text: String,
+    val timestamp: Long
+)
+
 data class Customer(
     val id: String,
     var name: String,
@@ -30,5 +35,6 @@ data class Customer(
     val dateAdded: Long,
     val addedBy: String,
     var assignedTo: String,
-    var notes: List<Note> = emptyList()
+    var notes: List<Note> = emptyList(),
+    var history: List<HistoryEvent> = emptyList()
 )

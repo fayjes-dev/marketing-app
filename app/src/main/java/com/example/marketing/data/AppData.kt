@@ -39,6 +39,13 @@ object AppData {
                     val author = map["author"] as? String ?: ""
                     Note(text = text, timestamp = timestamp, author = author)
                 }.sortedByDescending { it.timestamp }
+                val historyRaw = doc.get("history") as? List<*> ?: emptyList<Any>()
+                val history = historyRaw.mapNotNull { item ->
+                    val map = item as? Map<*, *> ?: return@mapNotNull null
+                    val text = map["text"] as? String ?: return@mapNotNull null
+                    val timestamp = (map["timestamp"] as? Long) ?: (map["timestamp"] as? Double)?.toLong() ?: 0L
+                    HistoryEvent(text = text, timestamp = timestamp)
+                }.sortedByDescending { it.timestamp }
                 Customer(
                     id = doc.id,
                     name = name,
@@ -47,7 +54,8 @@ object AppData {
                     dateAdded = dateAdded,
                     addedBy = addedBy,
                     assignedTo = assignedTo,
-                    notes = notes
+                    notes = notes,
+                    history = history
                 )
             }
             customers.clear()
@@ -70,9 +78,17 @@ object AppData {
             "dateAdded" to System.currentTimeMillis(),
             "addedBy" to addedBy,
             "assignedTo" to assignedTo,
-            "notes" to emptyList<Any>()
+            "notes" to emptyList<Any>(),
+            "history" to listOf(
+                mapOf("text" to "Added by ${userName(addedBy)}", "timestamp" to System.currentTimeMillis())
+            )
         )
         customersRef.document(id).set(data)
+    }
+
+    private fun addHistoryEvent(customerId: String, text: String) {
+        val event = mapOf("text" to text, "timestamp" to System.currentTimeMillis())
+        customersRef.document(customerId).update("history", FieldValue.arrayUnion(event))
     }
 
     fun addNote(customerId: String, text: String, author: String) {
@@ -85,11 +101,16 @@ object AppData {
     }
 
     fun updateStatus(customerId: String, status: Status) {
+        val oldLabel = customers.find { it.id == customerId }?.status?.label ?: "?"
         customersRef.document(customerId).update("status", status.name)
+        addHistoryEvent(customerId, "Status changed from $oldLabel to ${status.label}")
     }
 
     fun reassign(customerId: String, newAssignee: String) {
+        val oldId = customers.find { it.id == customerId }?.assignedTo
+        val oldName = if (oldId != null) userName(oldId) else "?"
         customersRef.document(customerId).update("assignedTo", newAssignee)
+        addHistoryEvent(customerId, "Reassigned from $oldName to ${userName(newAssignee)}")
     }
 
     fun deleteCustomer(customerId: String) {

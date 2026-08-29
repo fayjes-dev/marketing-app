@@ -547,6 +547,21 @@ fun CustomerDetailDialog(customer: Customer, session: UserAccount, onDismiss: ()
                     }
                 }
 
+                if (customer.history.isNotEmpty()) {
+                    Spacer(Modifier.height(14.dp))
+                    Text("History", fontSize = 12.sp, color = Color(0xFF64748B))
+                    Column(modifier = Modifier.padding(top = 6.dp)) {
+                        customer.history.forEach { event ->
+                            Text(
+                                "• ${event.text} — ${fmtDate(event.timestamp)}",
+                                fontSize = 11.sp,
+                                color = Color(0xFF94A3B8),
+                                modifier = Modifier.padding(bottom = 4.dp)
+                            )
+                        }
+                    }
+                }
+
                 Spacer(Modifier.height(14.dp))
                 TextButton(onClick = { showDeleteConfirm = true }) {
                     Text("Delete customer", color = Color(0xFFDC2626))
